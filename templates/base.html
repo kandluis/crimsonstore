@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 
 <html>
+{% block html %}
 
-
-
+  
     <head>
-
+    {% block head %}
         <meta charset="utf-8"/>
 
         <meta name="description" content="The Crimson Store"/>
@@ -13,45 +13,55 @@
         <link rel="shortcut icon" href="/media/img/Crimson_Store_Logo_2_small.ico"> <!-- this is the small photo in the tab -->
         <link rel="apple-touch-icon" href="#.png" />  <!-- this uploads the icon for apple's homescreen shortcuts-->
         <meta name="apple-mobile-web-app-title" content="#">  <!-- this changes the default name when on the homescreen in apple-->
-
+    {% endblock %}
+    {% block css %}
         <link href="/media/css/bootstrap.css" rel="stylesheet"/> <!-- if folder /css folder is in the same spot as the html file-->
         <link href="/media/css/bootstrap-responsive.css" rel="stylesheet"/>
         <link href="/media/css/stylesheet.css" rel="stylesheet"/>
-        
-                <title>The Crimson Store</title>
-        
+    {% endblock %}    
+                <title>{% block title %}The Crimson Store{% endblock %}</title>
+    {% block javascript %}   
         <script src="/media/js/simpleCart.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
         <script src="/media/js/bootstrap.js"></script>
-        <script src="simpleCart.js"></script>
+    {% endblock %}
+    {% block cart %}
         <script>
-          
           simpleCart({
 
+            cartColumns: [
+              { attr: "name", label: "Name"},
+              { attr: 'id', label: 'ID' },
+              { view: "currency", attr: "price", label: "Price"},
+              { view: "decrement", label: false},
+              { attr: "quantity", label: "Qty"},
+              { view: "increment", label: false},
+              { view: "currency", attr: "total", label: "SubTotal" },
+              { view: "remove", text: "Remove", label: false}
+            ],
 
-                cartColumns: [
-		        { attr: "name", label: "Name"},
-		        { view: "currency", attr: "price", label: "Price"},
-		        { view: "decrement", label: false},
-		        { attr: "quantity", label: "Qty"},
-		        { view: "increment", label: false},
-		        { view: "currency", attr: "total", label: "SubTotal" },
-		        { view: "remove", text: "Remove", label: false}
-	        ],
+              checkout: {
+                type: "PayPal",
 
-            checkout: {
-              type: "PayPal",
-              email: "aran@arankhanna.com"
-            }
-          });
+                email: 'businessmanager-facilitator@thecrimson.com',
+
+                sandbox: 'true',
+                
+                url: '{{ base_url }}',
+
+                success: '{{ base_url }}' + '-success/',
+
+                cancel: '{{ base_url }}'+ '-cancel/'
+               
+               }
+            });
         </script>
-
+    {% endblock %}
     </head>
 
 
 
     <body>
-
     	<div class="container">
 		    <div class="masthead">
 
@@ -66,7 +76,6 @@
             <img src="/media/img/logo.jpg" style="width:40px; height:40px; float:left;">
             <h3>The Crimson Store</h3> 
           </div>
-
     			<div class="navbar">
       				<div class="navbar-inner">
                   <div class="cart">
@@ -75,16 +84,19 @@
                   </div>
                             
 
-         {% block content %}
-         {% endblock %}
+     {% block content %}
+     {% endblock %}
 
         
 
-    <div id="feedback">
+      {% block feedback %}
+      <div id="feedback">
           <a class="white" target="_blank" href="#">&raquo; report a bug!</a><br>
           <a class="white" target="_blank" href="#">&raquo; give us feedback!</a>
       </div>
+      {% endblock %}
 
+      {% block footer %}
       <div id="bottom">
           <div class="footer crimson">
               <a class="footer" href="http://www.thecrimson.com">about us</a> | 
@@ -92,5 +104,7 @@
               Copyright &#169; 2013 by The Harvard Crimson
           </div>
       </div>
+      {% endblock %}
     </body>
+{% endblock %}
 </html>

@@ -1,6 +1,13 @@
+from django.db.models import Q
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
+from django.shortcuts import redirect
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 from webstore.models import *
+from webstore.paypal import Endpoint, verify_data
+
 
 # Create your views here.
 def ProductsAll(request):
@@ -37,14 +44,14 @@ def SpecificEvent(request, eventslug):
 
 
 def Cart(request):
-  return render_to_response('cart.html', context_instance=RequestContext(request))
+  base_url = request.build_absolute_uri('/checkout')
+  context = {'base_url' : base_url}
+  return render_to_response('cart.html', context, context_instance=RequestContext(request))
 
 #########################
 
 
 import re
-
-from django.db.models import Q
 def get_query(query_string, search_fields):
   ''' Returns a query, that is a combination of Q objects. That combination
         aims to search keywords within a model by testing the given search fields.
@@ -86,3 +93,38 @@ def Search(request):
   return render_to_response('search_results.html',
                           { 'query': query_string, 'products': found_products, 'events': found_events }, context_instance=RequestContext(request))
 
+
+#############################
+
+## PayPal #*
+@csrf_exempt
+def Success(request):
+  if request.method == 'POST':
+    data = dict(request.POST.items())
+  else:
+    return redirect('/')
+
+  data['base_url'] = request.build_absolute_uri()
+
+  # Takes care of verifying data and emailing
+  context = verify_data(data)
+
+  if context['verified'] == 'yes':
+    return render_to_response("success.html", context, context_instance=RequestContext(request))
+  else:
+    return render_to_response('wrong_order.html', context, context_instance=RequestContext(request))
+
+def Cancel(request):
+  return render_to_response('cancel.html', context_instance=RequestContext(request))
+
+# IPN implementation
+@csrf_exempt
+class PaypalIPN(Endpoint):
+
+  def process(self, data):
+    context = get_context(request,data)
+    return render_to_response("success.html", context, context_instance=RequestContext(request))
+      
+  def process_invalid(self, data):
+    # should probably log this somewhere
+    return render_to_response('cancel.html', context_instance=RequestContext(request))

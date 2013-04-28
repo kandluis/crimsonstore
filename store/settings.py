@@ -116,7 +116,9 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'watermarker',
-    'webstore'
+    'webstore',
+    # paypal integration
+    'paypal.standard.ipn'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -148,14 +150,25 @@ LOGGING = {
     }
 }
 
+# comment out for local development
+ADMIN_MEDIA_PREFIX = "/static/admin/"
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()
+
+# PayPal configuration
+PAYPAL_RECEIVER_EMAIL = 'businessmanager-facilitator@thecrimson.com'
+SITE_NAME = 'http://crimsonstore.heroku.com'
+
+# Email Settings
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'crimsonstore.test@gmail.com'
+EMAIL_HOST_PASSWORD = 'paycr!mson'
+DEFAULT_FROM_EMAIL = 'crimsonstore.test@gmail.com'
+SERVER_EMAIL = 'crimsonstore.test@gmail.com'
+
 try:
     from local_settings import *
 except ImportError:
     pass
-
-# commenting out for local development
-'''
-ADMIN_MEDIA_PREFIX = "/static/admin/"
-import dj_database_url
-DATABASES['default'] =  dj_database_url.config(default='postgres://rgkgrkoxpjblfw:eEt6JGws-HaqBnqnZhHvxYKkqm@ec2-54-243-238-218.compute-1.amazonaws.com:5432/d181cv7s05fidj')
-'''

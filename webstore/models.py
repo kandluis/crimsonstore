@@ -1,7 +1,5 @@
 from django.db import models
 
-
-
 # Create your models here.
 
 	
@@ -42,19 +40,22 @@ class ProductCategory(models.Model):
                                self.name)
     return u'%s: %s' % (self.catalog.name, self.name)
 
-
+# Corresponds to Category on SmugMug
 class EventCategory(models.Model):
   catalog = models.ForeignKey('Catalog',
                              related_name='event_categories')
   name = models.CharField(max_length=300)
   slug = models.SlugField(max_length=150) 
   description = models.TextField()
-  photo1 = models.ImageField(upload_to='product_photos/') 
-  photo2 = models.ImageField(upload_to='product_photos/')
-  photo3 = models.ImageField(upload_to='product_photos/')
+  # photo1 = models.ImageField(upload_to='product_photos/') 
+  # photo2 = models.ImageField(upload_to='product_photos/')
+  # photo3 = models.ImageField(upload_to='product_photos/')
   def __unicode__(self):
     return u'%s' % (self.name)
+  def get_key_images(self):
+    return Photo.objects.filter(keyImageForCategory=self)[:3]
 
+# Corresponds to Album on SmugMug
 class Event(models.Model):
   name = models.CharField(max_length=300)
   slug = models.SlugField(max_length=150)
@@ -65,18 +66,27 @@ class Event(models.Model):
                            related_name='events')
   description = models.TextField()
   photographer = models.CharField(max_length=300)
-  photo1 = models.ImageField(upload_to='product_photos/') 
-  photo2 = models.ImageField(upload_to='product_photos/')
-  photo3 = models.ImageField(upload_to='product_photos/')
+  # photo1 = models.ImageField(upload_to='product_photos/') 
+  # photo2 = models.ImageField(upload_to='product_photos/')
+  # photo3 = models.ImageField(upload_to='product_photos/')
   def __unicode__(self):
     return u'%s' % (self.name)
+  def get_key_images(self):
+    return Photo.objects.filter(keyImageForEvent=self)[:3]
 
+# Corresponds to Images from 
 class Photo(models.Model):
   event = models.ForeignKey('Event',
                            related_name='photos')
-  photo = models.ImageField(upload_to='product_photos/')
-  
+  keyImageForCategory = models.ForeignKey(EventCategory, null=True, blank=True)
+  keyImageForEvent    = models.ForeignKey(Event, null=True, blank=True)
+  lightboxURL = models.URLField()
+  largeURL    = models.URLField()
+  mediumURL   = models.URLField()
+  originalURL = models.URLField()
+  smallURL    = models.URLField()
+  thumbURL    = models.URLField()
+  tinyURL     = models.URLField()
+  url         = models.URLField() 
 
 ##########################
-
-
