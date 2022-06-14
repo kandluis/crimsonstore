@@ -2,7 +2,7 @@ Django==2.2.28
 MySQL-python==1.2.4
 PIL==1.1.7
 dj-database-url==0.2.1
-gunicorn==0.17.2
+gunicorn==19.5.0
 psycopg2==2.5
 smugpy==0.3.1
 watermarker==1.1
